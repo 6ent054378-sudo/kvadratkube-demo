@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="format-detection" content="telephone=no">
+  <title>Дневник вашего ремонта – КвадратВкубе | приложение 101</title>
+  <meta name="description" content="Приложение 101: все отчёты и расходы по ремонту в вашем телефоне. Прозрачный учёт от КвадратВкубе, Ставрополь.">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="./assets/fonts/Montserrat-Regular.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="./assets/fonts/Montserrat-SemiBold.woff2">
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+  <link rel="stylesheet" href="./assets/css/style.css?v=2">
+</head>
+<body>
+
+  <header class="header header_static">
+    <div class="container header__row">
+      <a href="index.html" class="header__brand">
+        <img class="header__mark-img" src="./assets/img/logo-mark-light.png" alt="КвадратВкубе" aria-hidden="true">
+        <span class="header__brand-text">
+          <span class="header__logo">Квадрат<span class="header__logo-accent">Вкубе</span></span>
+          <span class="header__slogan">ремонт в Ставрополе</span>
+        </span>
+      </a>
+<nav class="header__nav" id="mainNav" aria-label="Основное меню">
+          <a href="o-kompanii.html" class="header__nav-link">О компании</a>
+          <a href="index.html#zamer" class="header__nav-link">Замер</a>
+          <a href="nashi-proekty.html" class="header__nav-link">Наши работы</a>
+          <a href="contacts.html" class="header__nav-link">Контакты</a>
+        </nav>
+      <div class="header__contact">
+        <a href="tel:+79682679697" class="header__phone">+7 968 267-96-97</a>
+        <a href="contacts.html" class="header__cta">Заказать звонок</a>
+      </div>
+      <button class="header__burger" type="button" aria-label="Открыть меню" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="page-hero__bg" style="background-image:url('./assets/img/hero3.webp')" aria-hidden="true"></div>
+      <div class="container page-hero__inner">
+        <p class="page-hero__crumbs"><a href="index.html">Главная</a> / Дневник ремонта</p>
+        <h1 class="page-hero__title">Дневник вашего ремонта</h1>
+        <p class="page-hero__sub">Мобильное приложение 101. Весь ремонт – в одном приложении</p>
+      </div>
+    </section>
+
+    <section class="prose">
+      <div class="container prose__narrow">
+        <h2>Всё в вашем телефоне</h2>
+        <p>Ведём учёт в приложении 101 – сервисе управления ремонтом. Все отчёты и информация о ходе работ доступны мгновенно. Не нужно звонить и выяснять детали – открыли телефон и видите всё.</p>
+        <h2>Что умеет приложение</h2>
+        <p>Онлайн-контроль расходов: каждая трата с чеком. Онлайн-бюджет проекта: подтверждаете траты вы. Онлайн-приёмка работ поэтапно, без приезда. Фото и видео отчёты каждый день. Общий чат: отчёты и решения в одном месте. Прозрачное ценообразование по смете.</p>
+        <h2>Прозрачные расходы</h2>
+        <p>Каждое движение денег подтверждено отчётом: закупка материалов, оплата этапов. Все траты подтверждаете только вы.</p>
+        <p>Такой контроль уже включён в каждый наш ремонт. <a href="index.html#quiz">Рассчитайте стоимость за 1 минуту</a> или <a href="index.html#zamer">вызовите замерщика бесплатно</a>.</p>
+        <h2>Видеообзор приложения</h2>
+        <!-- Видеообзор приложения 101 (локальный файл со старого сайта) -->
+        <button class="video-card" type="button" data-video="./assets/video/app101.mp4" data-poster="./assets/video/app101-poster.jpg" aria-label="Смотреть видеообзор приложения 101">
+          <span class="video-card__bg" style="background-image:url('./assets/video/app101-poster.jpg');background-size:cover;background-position:center" aria-hidden="true"></span>
+          <span class="video-card__play" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 5.5v13l11-6.5-11-6.5Z" fill="#fff"/></svg>
+          </span>
+          <span class="video-card__caption">Как выглядит дневник ремонта изнутри — покажем на видео</span>
+        </button>
+      </div>
+    </section>
+
+    <div class="video-modal" id="videoModal" hidden role="dialog" aria-modal="true" aria-label="Видеообзор">
+      <div class="video-modal__box">
+        <div class="video-modal__frame" id="videoFrame"></div>
+        <button class="video-modal__close" type="button" id="videoClose">Закрыть</button>
+      </div>
+    </div>
+  <script>
+    (function () {
+      var card = document.querySelector('[data-video]');
+      var modal = document.getElementById('videoModal');
+      var frame = document.getElementById('videoFrame');
+      var closeBtn = document.getElementById('videoClose');
+      if (!card || !modal) return;
+      function close() { frame.innerHTML = ''; modal.hidden = true; }
+      card.addEventListener('click', function () {
+        var url = card.getAttribute('data-video');
+        if (!url) return;
+        if (/\.mp4($|\?)/i.test(url)) {
+          var poster = card.getAttribute('data-poster') || '';
+          frame.innerHTML = '<video src="' + url + '" controls playsinline preload="metadata"' + (poster ? ' poster="' + poster + '"' : '') + ' style="width:100%;height:100%"></video>';
+        } else {
+          frame.innerHTML = '<iframe src="' + url + '" allowfullscreen allow="autoplay; fullscreen"></iframe>';
+        }
+        modal.hidden = false;
+      });
+      closeBtn.addEventListener('click', close);
+      modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.hidden) close(); });
+    })();
+  </script>
+
+    <section class="final-cta">
+      <div class="container">
+        <h2 class="final-cta__title">Остались вопросы? <span>Звоните</span></h2>
+        <div class="final-cta__row">
+          <a class="final-cta__phone" href="tel:+79682679697">+7 968 267-96-97</a>
+          <a class="messenger messenger_max" href="https://max.ru/u/f9LHodD0cOJ5kG1ZhtrA_rpfNPIp2HuDAQBjc0V-R0tPErZ_dPeCxfC_WzI" target="_blank" rel="noopener" aria-label="Написать в MAX">
+            <svg width="20" height="20" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.236 21.937c-2.159 0-3.162-.316-4.906-1.583C5.227 21.779 1.734 22.892 1.581 20.988c0-1.43-.315-2.638-.672-3.957C.483 15.406 0 13.596 0 10.974 0 4.711 5.117 0 11.179 0c6.067 0 10.821 4.944 10.821 11.032.01 2.879-1.128 5.644-3.136 7.688-2.018 2.045-4.761 3.202-7.628 3.217Zm.09-16.524c-2.953-.153-5.254 1.899-5.763 5.117-.42 2.665.326 5.91.961 6.078.305.074 1.072-.548 1.55-1.028.79.548 1.71.878 2.668.955 1.47.071 2.91-.44 4.01-1.424 1.099-.984 1.77-2.361 1.869-3.836.057-1.478-.465-2.92-1.456-4.015-.99-1.095-2.369-1.756-3.839-1.847Z" fill="#fff"/></svg>
+          </a>
+          <a class="messenger messenger_tg" href="https://t.me/+79682679697" target="_blank" rel="noopener" aria-label="Написать в Telegram">
+            <svg width="22" height="18" viewBox="0 0 24 19" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 .794C23.877 1.331 23.745 1.864 23.627 2.401 22.851 5.981 22.075 9.56 21.299 13.14c-.352 1.617-.705 3.234-1.047 4.855-.189.888-1.358 1.313-2.145.766-2.854-1.995-5.704-3.995-8.558-5.995-.036-.023-.072-.056-.123-.098.184-.154.357-.299.536-.444 3.365-2.776 6.735-5.547 10.1-8.327.143-.117.276-.257.373-.407.123-.191.01-.341-.229-.294-.215.042-.434.121-.618.229-1.624.935-3.243 1.883-4.866 2.822-2.788 1.622-5.576 3.238-8.36 4.865-.163.094-.295.107-.474.051-1.619-.505-3.237-1-4.856-1.5-.46-.14-.837-.374-1.031-.804v-.299c.199-.35.536-.542.924-.677C7.803 5.406 14.686 2.934 21.57.467c.449-.159.904-.318 1.368-.425.557-.126.848.019 1.062.448v.299V.794Z" fill="#fff"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <a href="index.html" class="footer__brand">
+          <img class="header__mark-img" src="./assets/img/logo-mark-light.png" alt="КвадратВкубе" aria-hidden="true">
+          <span class="header__brand-text">
+            <span class="header__logo">Квадрат<span class="header__logo-accent">Вкубе</span></span>
+            <span class="header__slogan">ремонт в Ставрополе</span>
+          </span>
+        </a>
+        <nav class="footer__nav" aria-label="Карта сайта">
+          <a href="o-kompanii.html">О компании</a>
+          <a href="index.html#zamer">Замер</a>
+          <a href="nashi-proekty.html">Наши работы</a>
+          <a href="contacts.html">Контакты</a>
+          <a href="sovremennyj-dnevnik-vashego-remonta.html">Дневник</a>
+        </nav>
+        <div class="footer__contacts">
+          <a class="footer__phone" href="tel:+79682679697">+7 968 267-96-97</a>
+          <a class="footer__mail" href="mailto:stav.evroremont@yandex.ru">stav.evroremont@yandex.ru</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>© 2012–2026 КвадратВкубе, г. Ставрополь</span>
+        <a href="privacy.html">Политика конфиденциальности</a>
+        <span class="footer__made">Дизайн — Danil</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Яндекс.Метрика 106016821 -->
+  <script type="text/javascript">
+    (function(m, e, t, r, i, k, a) {
+      m[i] = m[i] || function() { (m[i].a = m[i].a || []).push(arguments) };
+      m[i].l = 1 * new Date();
+      for (var j = 0; j < document.scripts.length; j++) {
+        if (document.scripts[j].src === r) { return; }
+      }
+      k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
+    })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js', 'ym');
+    ym(106016821, 'init', { webvisor: true, clickmap: true, accurateTrackBounce: true, trackLinks: true });
+  </script>
+  <!-- /Яндекс.Метрика -->
+  <div class="cookie-notice" id="cookieNotice" hidden>
+    <div class="cookie-notice__inner">
+      <p class="cookie-notice__text">Мы используем файлы cookie и Яндекс.Метрику, чтобы сайт работал корректно. Оставаясь на сайте, вы соглашаетесь с <a href="privacy.html">политикой конфиденциальности</a>.</p>
+      <button class="btn cookie-notice__btn" type="button" id="cookieAccept">Хорошо</button>
+    </div>
+  </div>
+  <script>
+    (function () {
+      try {
+        if (!localStorage.getItem('kv_cookie_ok')) {
+          var n = document.getElementById('cookieNotice');
+          n.hidden = false;
+          requestAnimationFrame(function () { n.classList.add('cookie-notice_visible'); });
+          document.getElementById('cookieAccept').addEventListener('click', function () {
+            localStorage.setItem('kv_cookie_ok', '1');
+            n.classList.remove('cookie-notice_visible');
+            setTimeout(function () { n.hidden = true; }, 400);
+          });
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <script>
+    (function () {
+      var b = document.querySelector('.header__burger');
+      var h = document.querySelector('.header');
+      if (!b || !h) return;
+      b.addEventListener('click', function () {
+        var open = h.classList.toggle('header_open');
+        b.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    })();
+  </script>
+</body>
+</html>

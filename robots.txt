@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /old/
+Disallow: /spasibo.html
+
+Sitemap: https://kvadratvkube-kaijbzyfk-volt18.vercel.app/sitemap.xml
