@@ -560,7 +560,8 @@
     // при ошибке сети заявка всё равно уйдёт в Метрику как цель, сбой виден в логах Vercel.
     window.kvLead = function (payload) {
       try {
-        return fetch('/api/lead', {
+        // Абсолютный URL: формы работают и с основного домена, и с демо-зеркала
+        return fetch('https://kvadratvkube.vercel.app/api/lead', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
