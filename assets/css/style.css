@@ -150,6 +150,8 @@ body {
 .messenger_tg:hover { background: #3aabde; }
 .messenger_max { background: #7c3aed; }
 .messenger_max:hover { background: #8d55f0; }
+.messenger_wa { background: #25d366; }
+.messenger_wa:hover { background: #3ddc74; }
 
 .hero__trust { display: flex; gap: 20px; margin: 44px auto 0; justify-content: center; flex-wrap: wrap; }
 .hero__trust-item {
