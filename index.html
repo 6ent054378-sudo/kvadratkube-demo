@@ -219,6 +219,7 @@
                 <label class="quiz__channel"><input type="radio" name="channel" value="WhatsApp"><span>WhatsApp</span></label>
               </div>
               <div class="quiz__phone-row">
+                <input class="quiz__phone" type="text" name="name" placeholder="Ваше имя" autocomplete="name">
                 <input class="quiz__phone" type="tel" name="phone" placeholder="+7 (___) ___-__-__" autocomplete="tel" required>
                 <button class="btn quiz__submit" type="submit">Получить расчёт&nbsp;»</button>
               <p class="lead-error" hidden>Не получилось отправить заявку. Позвоните нам: <a href="tel:+79682679697">+7 968 267-96-97</a> — ответим лично.</p>
@@ -339,6 +340,11 @@
           <a class="work-card" href="kvartira-zhk-nasledie.html">
             <div class="work-card__photo"><img src="./assets/img/covers/nasledie.jpg" alt="Гостиная в ЖК Наследие после ремонта" loading="lazy"></div>
             <p class="work-card__title">Квартира, ЖК Наследие</p>
+          </a>
+          <a class="work-card" href="chastnii-dom-v-mihailovske.html">
+            <div class="work-card__photo"><img src="./assets/img/covers/mihailovske.jpg" alt="Зал с деревянными балками, дом в Михайловске" loading="lazy"></div>
+            <p class="work-card__title">Дом в Михайловске, 122 м²</p>
+            <p class="work-card__meta">122 м² · 4 месяца · <b>1 600 000 ₽</b></p>
           </a>
         </div>
         <p class="works__more"><a href="#quiz">Хочу так же – рассчитать стоимость</a></p>
@@ -681,9 +687,10 @@
         var ch = form.querySelector('input[name="channel"]:checked');
         var btn = form.querySelector('[type="submit"]');
         if (btn) { btn.disabled = true; btn.textContent = 'Отправляем…'; }
+        var qNameInput = form.querySelector('input[name="name"]');
         var ok = window.kvLead ? await window.kvLead({
           source: 'квиз',
-          name: '',
+          name: (qNameInput && qNameInput.value) || '',
           phone: phone.value || '',
           details: (parts.length ? parts.join(' · ') : '') + (ch ? ' · Удобно: ' + ch.value : ''),
         }) : false;
