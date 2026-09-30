@@ -3,4 +3,4 @@ Allow: /
 Disallow: /old/
 Disallow: /spasibo.html
 
-Sitemap: https://kvadratvkube-kaijbzyfk-volt18.vercel.app/sitemap.xml
+Sitemap: https://6ent054378-sudo.github.io/kvadratkube-demo/sitemap.xml
