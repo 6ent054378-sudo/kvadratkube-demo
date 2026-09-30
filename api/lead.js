@@ -1,40 +1,8 @@
-// POST /api/lead — заявки сайта.
-// Основное: сообщение в Telegram Дмитрию (мгновенно, как смс).
-// Тихо вдогонку: строка в Яндекс Форме (архив-дубль, ошибки игнорируем).
+// POST /api/lead — заявки сайта в Telegram Дмитрию.
 // Принимает JSON {source, name, phone, details}.
-const SURVEY_URL = 'https://forms.yandex.ru/u/6ab55d7e1f1eb5484e6e0f33/';
-const GATEWAY = 'https://forms.yandex.ru/u/gateway/root/form/';
-const SURVEY_ID = '6ab55d7e1f1eb5484e6e0f33';
 const TG_API = 'https://api.telegram.org';
 
-function pickCookies(setCookies) {
-  if (!setCookies) return '';
-  const list = Array.isArray(setCookies) ? setCookies : [setCookies];
-  return list.map((c) => String(c).split(';')[0]).join('; ');
-}
-
-function findQuestions(node, out) {
-  if (!node || typeof node !== 'object') return;
-  if (Array.isArray(node)) {
-    node.forEach((x) => findQuestions(x, out));
-    return;
-  }
-  if (node.id && (node.text || node.title || node.label) && node.type) {
-    out.push({ id: node.id, type: node.type, title: node.text || node.title || node.label });
-    return;
-  }
-  Object.values(node).forEach((x) => findQuestions(x, out));
-}
-
 const norm = (s) => String(s || '').toLowerCase();
-
-function matchField(questions, keys) {
-  for (const q of questions) {
-    const t = norm(q.title || '');
-    if (keys.some((k) => t.includes(k))) return q;
-  }
-  return null;
-}
 
 async function tgCall(token, method, params) {
   const r = await fetch(TG_API + '/bot' + token + '/' + method, {
@@ -65,73 +33,6 @@ function buildText({ source, name, phone, details }) {
   lines.push('Тел: ' + phone);
   if (details) lines.push('— ' + details);
   return lines.join('\n');
-}
-
-async function sendTelegram({ token, chatId, text }) {
-  let lastErr = 'unknown';
-  for (let i = 1; i <= 2; i++) {
-    try {
-      const chat = await resolveChatId(token, chatId);
-      await tgCall(token, 'sendMessage', { chat_id: chat, text });
-      return chat;
-    } catch (e) {
-      lastErr = String((e && e.message) || e).slice(0, 200);
-      if (i < 2) await new Promise((r) => setTimeout(r, 1500));
-    }
-  }
-  throw new Error(lastErr);
-}
-
-// Тихий архив в Яндекс Форму: ошибки глушим, на результат не влияем.
-async function archiveYandex({ source, name, phone, details, dry }) {
-  const t = (ms) => AbortSignal.timeout(ms);
-  const page = await fetch(SURVEY_URL, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: t(12000) });
-  const html = await page.text();
-  const rawCookies =
-    typeof page.headers.getSetCookie === 'function'
-      ? page.headers.getSetCookie()
-      : page.headers.get('set-cookie');
-  const m = html.match(/csrf-token" content="([^"]+)"/);
-  if (!m) throw new Error('no csrf');
-  const gwHeaders = {
-    'Content-Type': 'application/json',
-    'X-CSRF-Token': m[1],
-    Origin: 'https://forms.yandex.ru',
-    Referer: SURVEY_URL,
-    Cookie: pickCookies(rawCookies),
-    'User-Agent': 'Mozilla/5.0',
-  };
-  const schema = await (
-    await fetch(GATEWAY + 'getSurvey', {
-      method: 'POST',
-      headers: gwHeaders,
-      body: JSON.stringify({ surveyId: SURVEY_ID }),
-      signal: t(12000),
-    })
-  ).json();
-  const questions = [];
-  findQuestions(schema.pages || schema, questions);
-  const qName = matchField(questions, ['имя', 'name']);
-  const qPhone = matchField(questions, ['телефон', 'phone', 'tel']);
-  const qDetails =
-    matchField(questions, ['подробност', 'детал', 'комментар', 'ответ', 'details']) ||
-    questions.find((q) => q !== qName && q !== qPhone);
-  const values = {};
-  const head = [source && ('Источник: ' + source), name && ('Имя: ' + name)].filter(Boolean).join('\n');
-  if (qName && name) values[qName.id] = name;
-  if (qPhone) values[qPhone.id] = phone;
-  const det = [head, details && ('Подробности: ' + details)].filter(Boolean).join('\n');
-  if (qDetails) values[qDetails.id] = det || head || phone;
-  if (!Object.keys(values).length) throw new Error('no fields');
-  const postRes = await fetch(GATEWAY + 'postSurvey', {
-    method: 'POST',
-    headers: gwHeaders,
-    body: JSON.stringify({ surveyId: SURVEY_ID, values, parent: '', dryRun: !!dry }),
-    signal: t(12000),
-  });
-  const result = await postRes.json();
-  if (!postRes.ok || result.error) throw new Error(result.error || 'http ' + postRes.status);
-  return result.answer_id || null;
 }
 
 export default async function handler(req, res) {
@@ -174,15 +75,17 @@ export default async function handler(req, res) {
     res.status(200).json({ ok: true, dry: true, preview: text });
     return;
   }
-  try {
-    const chat = await sendTelegram({
-      token,
-      chatId: process.env.TELEGRAM_CHAT_ID || '',
-      text,
-    });
-    archiveYandex({ source, name, phone, details, dry: false }).catch(() => {});
-    res.status(200).json({ ok: true, via: 'tg', chat });
-  } catch (e) {
-    res.status(502).json({ ok: false, error: String((e && e.message) || e).slice(0, 200) });
+  let lastErr = 'unknown';
+  for (let i = 1; i <= 2; i++) {
+    try {
+      const chat = await resolveChatId(token, process.env.TELEGRAM_CHAT_ID || '');
+      await tgCall(token, 'sendMessage', { chat_id: chat, text });
+      res.status(200).json({ ok: true, via: 'tg', chat });
+      return;
+    } catch (e) {
+      lastErr = String((e && e.message) || e).slice(0, 200);
+      if (i < 2) await new Promise((r) => setTimeout(r, 1500));
+    }
   }
+  res.status(502).json({ ok: false, error: lastErr });
 }
