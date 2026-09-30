@@ -71,10 +71,29 @@ export default async function handler(req, res) {
   }
   const dry = req.query && (req.query.dry === '1' || req.query.dry === 'true');
 
+  // Ретрай: шлюз Яндекса иногда отвечает 500 на ровном месте (видно в логах).
+  // Две попытки с нуля (свежие cookies + csrf), между ними пауза 1.5с.
+  let lastError = 'unknown';
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const answerId = await sendYandex({ source, name, phone, details, dry });
+      res.status(200).json({ ok: true, dry: !!dry, answer_id: answerId, attempt });
+      return;
+    } catch (e) {
+      lastError = String((e && e.message) || e).slice(0, 200);
+      if (attempt < 2) await new Promise((r) => setTimeout(r, 1500));
+    }
+  }
+  res.status(502).json({ ok: false, error: lastError });
+}
+
+async function sendYandex({ source, name, phone, details, dry }) {
+  const t = (ms) => AbortSignal.timeout(ms);
   try {
     // 1. Забираем страницу формы: cookies + csrf-токен
     const page = await fetch(SURVEY_URL, {
       headers: { 'User-Agent': 'Mozilla/5.0' },
+      signal: t(15000),
     });
     const html = await page.text();
     const rawCookies =
@@ -99,6 +118,7 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: gwHeaders,
       body: JSON.stringify({ surveyId: SURVEY_ID }),
+      signal: t(15000),
     });
     const schema = await schemaRes.json();
     const questions = [];
@@ -120,7 +140,6 @@ export default async function handler(req, res) {
       .join('\n');
     if (qDetails) values[qDetails.id] = detailsText || text || phone;
     if (!Object.keys(values).length) {
-      // В форме пока нет полей — складываем всё в первое текстовое, если есть
       if (questions.length) values[questions[0].id] = [text, phone, details].filter(Boolean).join('\n');
       else throw new Error('no fields');
     }
@@ -135,11 +154,12 @@ export default async function handler(req, res) {
         parent: '',
         dryRun: !!dry,
       }),
+      signal: t(15000),
     });
     const result = await postRes.json();
     if (!postRes.ok || result.error) throw new Error(result.error || ('http ' + postRes.status));
-    res.status(200).json({ ok: true, dry: !!dry, answer_id: result.answer_id || null });
+    return result.answer_id || null;
   } catch (e) {
-    res.status(502).json({ ok: false, error: String((e && e.message) || e).slice(0, 200) });
+    throw e;
   }
 }

@@ -221,6 +221,7 @@
               <div class="quiz__phone-row">
                 <input class="quiz__phone" type="tel" name="phone" placeholder="+7 (___) ___-__-__" autocomplete="tel" required>
                 <button class="btn quiz__submit" type="submit">Получить расчёт&nbsp;»</button>
+              <p class="lead-error" hidden>Не получилось отправить заявку. Позвоните нам: <a href="tel:+79682679697">+7 968 267-96-97</a> — ответим лично.</p>
               </div>
               <label class="quiz__consent">
                 <input type="checkbox" name="consent" checked required>
@@ -296,6 +297,7 @@
               <span>Согласен на обработку персональных данных (<a href="privacy.html">политика</a>)</span>
             </label>
             <button class="btn zamer__submit" type="submit">Вызвать замерщика</button>
+            <p class="lead-error" hidden>Не получилось отправить заявку. Позвоните нам: <a href="tel:+79682679697">+7 968 267-96-97</a> — ответим лично.</p>
             <div class="zamer__success" id="zamerSuccess" hidden>
               <p class="zamer__success-title">Заявка принята!</p>
               <p class="zamer__success-text">Дмитрий перезвонит с номера +7 968 267-96-97 в течение 10 минут.</p>
@@ -487,6 +489,7 @@
               <span>Согласен на обработку персональных данных (<a href="privacy.html">политика</a>)</span>
             </label>
             <button class="btn contacts__submit" type="submit">Жду звонка</button>
+            <p class="lead-error" hidden>Не получилось отправить заявку. Позвоните нам: <a href="tel:+79682679697">+7 968 267-96-97</a> — ответим лично.</p>
             <div class="contacts__success" id="contactsSuccess" hidden>
               <p class="contacts__success-title">Заявка принята!</p>
               <p class="contacts__success-text">Дмитрий перезвонит с номера +7 968 267-96-97 в течение 10 минут.</p>
@@ -564,17 +567,29 @@
   </script>
   <!-- quiz / остальные блоки – следующий этап, якоря #quiz #about #prices #works #reviews #contacts зарезервированы -->
   <script>
-    // Отправка заявки в Яндекс Форму через /api/lead. Не блокирует переход:
-    // при ошибке сети заявка всё равно уйдёт в Метрику как цель, сбой виден в логах Vercel.
-    window.kvLead = function (payload) {
+    // Отправка заявки через наш релей в Яндекс Форму (с ретраем на сервере).
+    // Возвращает true/false — фейкового «принято» больше нет: при ошибке
+    // показываем телефон вместо редиректа.
+    window.kvLead = async function (payload) {
       try {
         // Абсолютный URL: формы работают и с основного домена, и с демо-зеркала
-        return fetch('https://kvadratvkube.vercel.app/api/lead', {
+        var r = await fetch('https://kvadratvkube.vercel.app/api/lead', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
-        }).catch(function () {});
-      } catch (e) { return null; }
+          signal: AbortSignal.timeout(25000),
+        });
+        var j = await r.json().catch(function () { return {}; });
+        return !!(r.ok && j.ok);
+      } catch (e) {
+        return false;
+      }
+    };
+    window.kvLeadFail = function (form) {
+      var err = form.querySelector('.lead-error');
+      if (err) err.hidden = false;
+      var btn = form.querySelector('[type="submit"]');
+      if (btn) btn.disabled = false;
     };
   </script>
   <script>
@@ -649,7 +664,7 @@
 
       back.addEventListener('click', function () { if (current > 0) show(current - 1); });
 
-      form.addEventListener('submit', function (e) {
+      form.addEventListener('submit', async function (e) {
         e.preventDefault();
         var phone = form.querySelector('.quiz__phone');
         var consent = form.querySelector('input[name="consent"]');
@@ -664,12 +679,15 @@
         var parts = [];
         ['1', '2', '3', '4', '5'].forEach(function (n) { if (answers[n]) parts.push(answers[n]); });
         var ch = form.querySelector('input[name="channel"]:checked');
-        if (window.kvLead) window.kvLead({
+        var btn = form.querySelector('[type="submit"]');
+        if (btn) { btn.disabled = true; btn.textContent = 'Отправляем…'; }
+        var ok = window.kvLead ? await window.kvLead({
           source: 'квиз',
           name: '',
           phone: phone.value || '',
           details: (parts.length ? parts.join(' · ') : '') + (ch ? ' · Удобно: ' + ch.value : ''),
-        });
+        }) : false;
+        if (!ok) { window.kvLeadFail(form); if (btn) btn.textContent = 'Получить расчёт »'; return; }
         if (window.ym) ym(106016821, 'reachGoal', 'quiz_lead');
         window.location.href = 'spasibo.html';
       });
@@ -681,7 +699,7 @@
     (function () {
       var form = document.getElementById('zamerForm');
       if (!form) return;
-      form.addEventListener('submit', function (e) {
+      form.addEventListener('submit', async function (e) {
         e.preventDefault();
         var phone = form.querySelector('.zamer__input[name="phone"]');
         var consent = form.querySelector('input[name="consent"]');
@@ -694,12 +712,15 @@
         }
         if (!consent.checked) { consent.focus(); return; }
         var nameInput = form.querySelector('input[name="name"]');
-        if (window.kvLead) window.kvLead({
+        var zBtn = form.querySelector('[type="submit"]');
+        if (zBtn) { zBtn.disabled = true; zBtn.textContent = 'Отправляем…'; }
+        var zOk = window.kvLead ? await window.kvLead({
           source: 'замер',
           name: (nameInput && nameInput.value) || '',
           phone: phone.value || '',
           details: '',
-        });
+        }) : false;
+        if (!zOk) { window.kvLeadFail(form); if (zBtn) zBtn.textContent = 'Вызвать замерщика'; return; }
         if (window.ym) ym(106016821, 'reachGoal', 'zamer_lead');
         window.location.href = 'spasibo.html';
       });
@@ -709,7 +730,7 @@
     (function () {
       var form = document.getElementById('contactsForm');
       if (!form) return;
-      form.addEventListener('submit', function (e) {
+      form.addEventListener('submit', async function (e) {
         e.preventDefault();
         var phone = form.querySelector('input[name="phone"]');
         var consent = form.querySelector('input[name="consent"]');
@@ -722,12 +743,15 @@
         }
         if (!consent.checked) { consent.focus(); return; }
         var cNameInput = form.querySelector('input[name="name"]');
-        if (window.kvLead) window.kvLead({
+        var cBtn = form.querySelector('[type="submit"]');
+        if (cBtn) { cBtn.disabled = true; cBtn.textContent = 'Отправляем…'; }
+        var cOk = window.kvLead ? await window.kvLead({
           source: 'контакты',
           name: (cNameInput && cNameInput.value) || '',
           phone: phone.value || '',
           details: '',
-        });
+        }) : false;
+        if (!cOk) { window.kvLeadFail(form); if (cBtn) cBtn.textContent = 'Жду звонка'; return; }
         if (window.ym) ym(106016821, 'reachGoal', 'contacts_lead');
         window.location.href = 'spasibo.html';
       });

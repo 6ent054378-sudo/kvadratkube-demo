@@ -429,6 +429,11 @@ html { scroll-behavior: smooth; }
 .contacts__form-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
 .contacts__form .zamer__input { margin-top: 12px; }
 .contacts__form .quiz__consent { margin: 14px 0; }
+.lead-error {
+  margin-top: 12px; font-size: 14.5px; line-height: 1.55; color: #a33b2e;
+  background: #fdf0ed; border: 1px solid #f0c9c2; border-radius: 12px; padding: 12px 16px;
+}
+.lead-error a { color: #a33b2e; font-weight: 600; }
 .contacts__submit { width: 100%; min-height: 0; padding: 17px 20px; font-size: 16px; }
 .contacts__success { text-align: center; padding-top: 8px; }
 .contacts__success-title { font-size: 22px; font-weight: 600; }
