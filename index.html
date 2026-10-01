@@ -219,7 +219,7 @@
                 <label class="quiz__channel"><input type="radio" name="channel" value="WhatsApp"><span>WhatsApp</span></label>
               </div>
               <div class="quiz__phone-row">
-                <input class="quiz__phone" type="text" name="name" placeholder="Ваше имя" autocomplete="name">
+                <input class="quiz__phone quiz__name" type="text" name="name" placeholder="Ваше имя" autocomplete="name">
                 <input class="quiz__phone" type="tel" name="phone" placeholder="+7 (___) ___-__-__" autocomplete="tel" required>
                 <button class="btn quiz__submit" type="submit">Получить расчёт&nbsp;»</button>
               <p class="lead-error" hidden>Не получилось отправить заявку. Позвоните нам: <a href="tel:+79682679697">+7 968 267-96-97</a> — ответим лично.</p>
@@ -672,7 +672,7 @@
 
       form.addEventListener('submit', async function (e) {
         e.preventDefault();
-        var phone = form.querySelector('.quiz__phone');
+        var phone = form.querySelector('.quiz__phone[name="phone"]');
         var consent = form.querySelector('input[name="consent"]');
         var digits = (phone.value || '').replace(/\D/g, '');
         phone.classList.remove('quiz__phone_error');
