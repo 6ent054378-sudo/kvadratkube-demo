@@ -517,7 +517,6 @@ html { scroll-behavior: smooth; }
 @media (max-width: 767px) {
   .page-hero__inner { padding: 48px 0; }
   .final-cta__phone { flex: 1 1 100%; text-align: center; }
-  .final-cta__row { flex-wrap: nowrap; }
   .why { padding: 44px 0; }
   .final-cta { padding: 52px 0; }
   .final-cta__phone { font-size: 22px; }
