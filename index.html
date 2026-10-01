@@ -573,58 +573,23 @@
   </script>
   <!-- quiz / остальные блоки – следующий этап, якоря #quiz #about #prices #works #reviews #contacts зарезервированы -->
   <script>
-    // Отправка заявки напрямую в formsubmit (письмо Дмитрию) через скрытый
-    // iframe — без своего бэкенда и без CORS: обычный POST формы.
-    // Возвращает true/false: при ошибке показываем телефон вместо редиректа.
-    window.kvLead = function (payload) {
-      return new Promise(function (resolve) {
-        try {
-          var frameName = 'leadFrame';
-          var frame = document.querySelector('iframe[name="' + frameName + '"]');
-          if (!frame) {
-            frame = document.createElement('iframe');
-            frame.name = frameName;
-            frame.style.display = 'none';
-            frame.setAttribute('aria-hidden', 'true');
-            document.body.appendChild(frame);
-          }
-          var done = false;
-          var finish = function (ok) {
-            if (done) return;
-            done = true;
-            try { frame.removeEventListener('load', onLoad); } catch (e) {}
-            resolve(ok);
-          };
-          var onLoad = function () { finish(true); };
-          frame.addEventListener('load', onLoad);
-          var f = document.createElement('form');
-          f.method = 'POST';
-          f.action = 'https://formsubmit.co/stav.evroremont@yandex.ru';
-          f.target = frameName;
-          f.style.display = 'none';
-          var fields = {
-            name: payload.name || '—',
-            phone: payload.phone || '',
-            message: (payload.source ? 'Источник: ' + payload.source + '\n' : '') + (payload.details || ''),
-            _subject: 'Заявка с сайта КвадратВкубе (' + (payload.source || 'форма') + ')',
-            _template: 'table',
-            _captcha: 'false',
-          };
-          Object.keys(fields).forEach(function (k) {
-            var inp = document.createElement('input');
-            inp.type = 'hidden';
-            inp.name = k;
-            inp.value = fields[k];
-            f.appendChild(inp);
-          });
-          document.body.appendChild(f);
-          f.submit();
-          setTimeout(function () { finish(false); }, 25000);
-          setTimeout(function () { try { f.remove(); } catch (e) {} }, 30000);
-        } catch (e) {
-          resolve(false);
-        }
-      });
+    // Отправка заявки в Telegram Дмитрию через релей на Vercel
+    // (сайт живёт на GitHub Pages, там нет бэкенда).
+    // Возвращает true/false — фейкового «принято» нет: при ошибке
+    // показываем телефон вместо редиректа.
+    window.kvLead = async function (payload) {
+      try {
+        var r = await fetch('https://kvadratvkube.vercel.app/api/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(25000),
+        });
+        var j = await r.json().catch(function () { return {}; });
+        return !!(r.ok && j.ok);
+      } catch (e) {
+        return false;
+      }
     };
     window.kvLeadFail = function (form) {
       var err = form.querySelector('.lead-error');
