@@ -457,6 +457,14 @@ html { scroll-behavior: smooth; }
 .prose p { font-size: 16.5px; line-height: 1.65; color: #3a352e; margin-bottom: 16px; }
 .prose p b, .prose li b { color: var(--text); }
 .prose a { color: var(--accent); font-weight: 600; }
+.spasibo-phone { font-size: 32px; font-weight: 600; letter-spacing: -.02em; color: var(--text) !important; text-decoration: none; }
+.spasibo-phone:hover { color: var(--accent) !important; }
+.spasibo-msgr { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0 8px; }
+.spasibo-msgr .messenger { width: auto; height: 54px; padding: 0 22px; gap: 10px; color: #fff; font-size: 15.5px; font-weight: 600; text-decoration: none; border-radius: 14px; }
+@media (max-width: 767px) {
+  .spasibo-phone { font-size: 26px; }
+  .spasibo-msgr .messenger { flex: 1 1 100%; justify-content: center; }
+}
 .dmitry-photo {
   width: 230px; border-radius: 16px; float: right; margin: 6px 0 16px 24px;
   box-shadow: 0 12px 32px rgba(20,70,85,.18);
