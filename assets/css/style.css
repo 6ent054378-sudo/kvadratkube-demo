@@ -525,6 +525,26 @@ html { scroll-behavior: smooth; }
   .control__person { flex-direction: column; }
 }
 
+/* ---------- Лайтбокс галереи ---------- */
+.lb[hidden] { display: none; }
+.lb {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(15, 14, 12, .92);
+  display: flex; align-items: center; justify-content: center;
+}
+.lb__img { max-width: min(92vw, 1200px); max-height: 86vh; border-radius: 12px; object-fit: contain; }
+.lb__close, .lb__prev, .lb__next {
+  position: absolute; border: 0; cursor: pointer; color: #fff;
+  background: rgba(255,255,255,.12); border-radius: 50%;
+  width: 48px; height: 48px; font-size: 26px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+}
+.lb__close:hover, .lb__prev:hover, .lb__next:hover { background: rgba(255,255,255,.25); }
+.lb__close { top: 18px; right: 18px; }
+.lb__prev { left: 14px; top: 50%; transform: translateY(-50%); }
+.lb__next { right: 14px; top: 50%; transform: translateY(-50%); }
+.lb__count { position: absolute; bottom: 16px; left: 0; right: 0; text-align: center; color: rgba(255,255,255,.75); font-size: 14px; margin: 0; }
+
 /* ---------- Видео (плеер как в оригинале: превью + модалка) ---------- */
 .video-card {
   position: relative; border-radius: 20px; overflow: hidden;
