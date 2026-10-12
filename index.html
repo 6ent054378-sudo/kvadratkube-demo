@@ -580,23 +580,25 @@
   </script>
   <!-- quiz / остальные блоки – следующий этап, якоря #quiz #about #prices #works #reviews #contacts зарезервированы -->
   <script>
-    // Отправка заявки в Telegram Дмитрию через релей на Vercel
-    // (сайт живёт на GitHub Pages, там нет бэкенда).
-    // Возвращает true/false — фейкового «принято» нет: при ошибке
-    // показываем телефон вместо редиректа.
+    // Отправка заявки: сначала свой PHP-релей (/lead.php, там где лежит сайт),
+    // при сбое — запасной релей. Возвращает true/false — фейкового «принято»
+    // нет: при ошибке показываем телефон вместо редиректа.
     window.kvLead = async function (payload) {
-      try {
-        var r = await fetch('https://kvadratvkube.vercel.app/api/lead', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-          signal: AbortSignal.timeout(25000),
-        });
-        var j = await r.json().catch(function () { return {}; });
-        return !!(r.ok && j.ok);
-      } catch (e) {
-        return false;
+      var body = JSON.stringify(payload);
+      var urls = ['/lead.php', 'https://kvadratvkube.vercel.app/api/lead'];
+      for (var i = 0; i < urls.length; i++) {
+        try {
+          var r = await fetch(urls[i], {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: body,
+            signal: AbortSignal.timeout(25000),
+          });
+          var j = await r.json().catch(function () { return {}; });
+          if (r.ok && j.ok) return true;
+        } catch (e) {}
       }
+      return false;
     };
     window.kvLeadFail = function (form) {
       var err = form.querySelector('.lead-error');
