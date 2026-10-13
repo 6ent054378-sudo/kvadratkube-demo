@@ -373,8 +373,13 @@ html { scroll-behavior: smooth; }
 }
 .control__app-note { margin-top: 14px; font-size: 13.5px; color: rgba(255,255,255,.5); }
 .control__app-note a { color: #9fc3cf; }
-.control__compare { margin-top: 28px; border: 1px solid rgba(255,255,255,.1); border-radius: 20px; padding: 26px 28px; overflow-x: auto; }
-.control__compare-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+.control__compare { margin-top: 28px; border: 1px solid rgba(255,255,255,.1); border-radius: 20px; padding: 26px 28px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.control__compare-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.table-hint { display: none; font-size: 13px; color: rgba(255,255,255,.45); margin: 0 0 12px; }
+@media (max-width: 767px) {
+  .table-hint { display: block; }
+  .control__compare { padding: 20px 18px; }
+}
 .control__table { min-width: 560px; }
 .control__row { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 12px; padding: 11px 0; border-top: 1px solid rgba(255,255,255,.08); font-size: 14.5px; }
 .control__row_head { border-top: 0; color: rgba(255,255,255,.5); font-size: 12.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
