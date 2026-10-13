@@ -218,6 +218,13 @@ body {
   .header__logo { font-size: 17px; }
   .header__slogan { font-size: 11px; }
   .header__burger { padding: 10px 4px; margin-left: 0; }
+@media (max-width: 380px) {
+  .header__row { gap: 8px; }
+  .header__mark-img { width: 32px; height: 32px; }
+  .header__logo { font-size: 16px; }
+  .header__slogan { display: none; }
+  .header__phone { font-size: 14px; }
+}
   .hero__inner { padding-top: 118px; }
   .hero__title { font-size: 27px; }
   .hero__subtitle { font-size: 15px; }
