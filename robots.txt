@@ -3,4 +3,4 @@ Allow: /
 Disallow: /old/
 Disallow: /spasibo.html
 
-Sitemap: https://6ent054378-sudo.github.io/kvadratkube-demo/sitemap.xml
+Sitemap: https://kvadratvkube26.ru/sitemap.xml
