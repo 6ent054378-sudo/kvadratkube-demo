@@ -211,11 +211,13 @@ body {
     background-image: -webkit-image-set(url("../img/hero2-m.webp") 1x);
     background-image: image-set(url("../img/hero2-m.webp") type("image/webp") 1x, url("../img/hero2.jpg") type("image/jpeg") 1x);
   }
-  .header__row { gap: 14px; padding-top: 12px; padding-bottom: 12px; }
-  .header__phone { font-size: 16px; }
+  .header__row { gap: 10px; padding-top: 12px; padding-bottom: 12px; }
+  .header__phone { font-size: 15px; }
   .header__cta { display: none; }
-  .header__mark-img { width: 36px; height: 36px; }
-  .header__logo { font-size: 18px; }
+  .header__mark-img { width: 34px; height: 34px; }
+  .header__logo { font-size: 17px; }
+  .header__slogan { font-size: 11px; }
+  .header__burger { padding: 10px 4px; margin-left: 0; }
   .hero__inner { padding-top: 118px; }
   .hero__title { font-size: 27px; }
   .hero__subtitle { font-size: 15px; }
